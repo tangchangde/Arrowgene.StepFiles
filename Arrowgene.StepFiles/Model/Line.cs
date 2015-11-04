@@ -1,4 +1,6 @@
-﻿namespace Arrowgene.StepFiles.Model
+﻿using System.Collections.Generic;
+
+namespace Arrowgene.StepFiles.Model
 {
     /// <summary>
     /// A model for a single line in a step chart. Contains several steps, the number
@@ -7,6 +9,11 @@
     /// </summary>
     public class Line
     {
+        public Line()
+        {
+            this.Steps = new List<Step>();
+        }
 
+        public List<Step> Steps { get; set; }
     }
 }

@@ -45,6 +45,7 @@
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Model\Beat.cs" />
     <Compile Include="Model\Difficulty.cs" />
     <Compile Include="Model\Line.cs" />
     <Compile Include="Model\Measure.cs" />
