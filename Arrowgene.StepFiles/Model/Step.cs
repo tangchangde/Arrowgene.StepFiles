@@ -5,6 +5,13 @@
     /// </summary>
     public class Step
     {
+        public Step()
+        {
+            this.Index = 0;
+            this.StepType = StepType.None;
+        }
 
+        public int Index { get; set; }
+        public StepType StepType { get; set; }
     }
 }

@@ -5,6 +5,7 @@
     using System.Collections.Generic;
     using System.IO;
     using ReadImpl;
+    using System;
 
     /// <summary>
     /// Reader to read different stepfiles and create an object,
@@ -14,6 +15,23 @@
     public class StepFileReader
     {
         private Dictionary<string, IStepFileReader> stepFileReader;
+
+        public static byte[] ReadFile(string filePath)
+        {
+            byte[] bytes = null;
+            using (FileStream fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read))
+            {
+                if (fileStream.Length > Int32.MaxValue)
+                {
+                    throw new FileLoadException(string.Format("File size {0}bytes exceeds maximum length of {0}bytes", fileStream.Length, Int32.MaxValue), filePath);
+                }
+
+                int length = (int)fileStream.Length;
+                bytes = new byte[length];
+                fileStream.Read(bytes, 0, length);
+            }
+            return bytes;
+        }
 
         /// <summary>
         /// Creates a new instance of the Class.
@@ -60,16 +78,21 @@
         /// <returns></returns>
         public StepFile Read(string filePath)
         {
-            StepFile stepFile = null;
-
             string fileExtension = Path.GetExtension(filePath);
+            return this.Read(ReadFile(filePath), fileExtension);
+        }
+
+        public StepFile Read(byte[] file, string fileExtension)
+        {
+            StepFile stepFile = null;
 
             if (this.stepFileReader.ContainsKey(fileExtension))
             {
-                stepFile = this.stepFileReader[fileExtension].Read(filePath);
+                stepFile = this.stepFileReader[fileExtension].Read(file);
             }
 
             return stepFile;
         }
+
     }
 }

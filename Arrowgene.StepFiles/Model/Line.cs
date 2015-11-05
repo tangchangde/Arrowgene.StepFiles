@@ -12,8 +12,10 @@ namespace Arrowgene.StepFiles.Model
         public Line()
         {
             this.Steps = new List<Step>();
+            this.Index = 0;
         }
 
+        public int Index { get; set; }
         public List<Step> Steps { get; set; }
     }
 }

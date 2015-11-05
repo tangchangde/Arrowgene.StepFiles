@@ -11,6 +11,7 @@
         public Difficulty()
         {
             this.Measures = new List<Measure>();
+            this.Level = 0;
         }
 
         public int Level { get; set; }

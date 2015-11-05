@@ -47,6 +47,7 @@
   <ItemGroup>
     <Compile Include="Model\Beat.cs" />
     <Compile Include="Model\Difficulty.cs" />
+    <Compile Include="Model\Enums.cs" />
     <Compile Include="Model\Line.cs" />
     <Compile Include="Model\Measure.cs" />
     <Compile Include="Model\Step.cs" />

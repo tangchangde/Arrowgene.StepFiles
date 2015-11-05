@@ -4,7 +4,7 @@
 
     public interface IStepFileReader
     {
-        StepFile Read(string filePath);
+        StepFile Read(byte[] file);
 
     }
 }

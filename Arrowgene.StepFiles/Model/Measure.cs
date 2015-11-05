@@ -12,8 +12,10 @@
         public Measure()
         {
             this.Lines = new List<Line>();
+            this.Index = 0;
         }
 
+        public int Index { get; set; }
         public List<Line> Lines { get; set; }
     }
 }

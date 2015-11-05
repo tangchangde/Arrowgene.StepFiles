@@ -35,30 +35,18 @@
 
         }
 
-        public StepFile Read(string filePath)
+        public StepFile Read(byte[] file)
         {
-            // A .sm file is primarily composed of two major sections: the header, and the chart data. The .sm file format is mostly a key/value store, though the actual note and chart data is a bit more complex.
+            // A .sm file is primarily composed of two major sections: the header, and the chart data. 
+            // The .sm file format is mostly a key/value store, though the actual note and chart data is a bit more complex.
 
             StepFile stepFile = new StepFile();
             Dictionary<string, string> simFileMetaEntries = new Dictionary<string, string>();
             List<string> simNoteEntries = new List<string>();
-            byte[] bytes = null;
 
-            using (FileStream fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read))
+            if (file != null)
             {
-                if (fileStream.Length > Int32.MaxValue)
-                {
-                    throw new FileLoadException(string.Format("File size {0}bytes exceeds maximum length of {0}bytes", fileStream.Length, Int32.MaxValue), filePath);
-                }
-
-                int length = (int)fileStream.Length;
-                bytes = new byte[length];
-                fileStream.Read(bytes, 0, length);
-            }
-
-            if (bytes != null)
-            {
-                using (MemoryStream stream = new MemoryStream(bytes))
+                using (MemoryStream stream = new MemoryStream(file))
                 {
                     int symbol;
                     while ((symbol = stream.ReadByte()) >= 0)
@@ -260,12 +248,12 @@
 
             foreach (string simNoteEntry in simNoteEntries)
             {
-                Difficulty stepFiledifficulty = new Difficulty();
+                Difficulty stepFileDifficulty = new Difficulty();
 
                 ChartType chartType = ChartType.none;
-                string description = string.Empty;
-                int difficulty = 0;
-                string numericMeter;
+                string description = String.Empty;
+                string difficulty = String.Empty;
+                int numericMeter = 0;
                 string grooveRadar;
 
                 using (StringReader stringReader = new StringReader(simNoteEntry))
@@ -274,7 +262,7 @@
 
                     // Parse notes tags
                     int index = 0;
-                    string value = string.Empty;
+                    string value = String.Empty;
 
                     while ((symbol = stringReader.Read()) >= 0 && index < metaEntries)
                     {
@@ -329,8 +317,8 @@
                                     }
                                     break;
                                 case 1: description = value; break;
-                                case 2: int.TryParse(value, out difficulty); break;
-                                case 3: numericMeter = value; break;
+                                case 2: difficulty = value; break;
+                                case 3: int.TryParse(value, out numericMeter); break;
                                 case 4: grooveRadar = value; break;
                             }
 
@@ -341,7 +329,7 @@
 
                     if (chartType != ChartType.none)
                     {
-                        stepFiledifficulty.Level = difficulty;
+                        stepFileDifficulty.Level = numericMeter;
 
                         // Parse notes
                         int slashCount = 0;
@@ -376,24 +364,32 @@
                         }
 
                         string[] measurements = value.Split(',');
+                        int measureRowIndex = 0;
+
                         foreach (string measureRow in measurements)
                         {
                             // Note data itself is a bit more complex; 
                             // there's one character for every possible playable column in a chart type. 
                             // Note types (e.g. 4th, 8th, etc.) are determined by how many rows exist before the comma (which separates measures).
 
-                            Measure measure = new Measure();
                             int notesPerLine = (int)chartType;
                             int lineCount = measureRow.Length / notesPerLine;
+
+                            Measure measure = new Measure();
+                            measure.Index = measureRowIndex;
 
                             for (int currentLineCount = 0; currentLineCount < lineCount; currentLineCount++)
                             {
                                 Line line = new Line();
+                                line.Index = currentLineCount;
+
                                 int noteStartIndex = currentLineCount * notesPerLine;
 
                                 for (int currentNoteInLine = 0; currentNoteInLine < notesPerLine; currentNoteInLine++)
                                 {
                                     Step step = new Step();
+                                    step.Index = currentNoteInLine;
+
                                     int currentNoteIndex = noteStartIndex + currentNoteInLine;
 
                                     switch (measureRow[currentNoteIndex])
@@ -415,10 +411,10 @@
                                         // Non - Standard Tags
                                         // You might run into some .sm files with some non - standard tags.Though these aren't supported by StepMania, they're good to know.
 
-                                        case '0': break;
-                                        case '1': break;
-                                        case '2': break;
-                                        case '3': break;
+                                        case '0': step.StepType = StepType.None; break;
+                                        case '1': step.StepType = StepType.Normal; break;
+                                        case '2': step.StepType = StepType.HoldStart; break;
+                                        case '3': step.StepType = StepType.HoldEnd; break;
                                         case '4': break;
                                         case 'M': break;
                                         case 'K': break;
@@ -429,7 +425,8 @@
                                 }
                                 measure.Lines.Add(line);
                             }
-                            stepFiledifficulty.Measures.Add(measure);
+                            stepFileDifficulty.Measures.Add(measure);
+                            measureRowIndex++;
                         }
 
                     }
@@ -438,7 +435,7 @@
                         // invalid chart type
                     }
                 }
-                stepFile.Difficulties.Add(stepFiledifficulty);
+                stepFile.Difficulties.Add(stepFileDifficulty);
             }
         }
     }
