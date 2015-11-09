@@ -23,7 +23,7 @@
             {
                 if (fileStream.Length > Int32.MaxValue)
                 {
-                    throw new FileLoadException(string.Format("File size {0}bytes exceeds maximum length of {0}bytes", fileStream.Length, Int32.MaxValue), filePath);
+                    throw new FileLoadException(string.Format("File size {0}bytes exceeds maximum length of {1}bytes", fileStream.Length, Int32.MaxValue), filePath);
                 }
 
                 int length = (int)fileStream.Length;
