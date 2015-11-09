@@ -19,20 +19,12 @@
 
         private const string NOTE_KEY = "NOTES";
 
-        public enum ChartType
-        {
-            none = 0,
-            dance_single = 4,
-            pump_single = 5,
-            dance_solo = 6,
-            kb7_single = 7,
-            dance_double = 8,
-            pump_double = 10
-        }
-
         public SimFileReader()
         {
-
+            // TODO:
+            // Detect Comments through whole file (currently only in notes section)
+            // Have a Comments list on each Object
+            // Dont read "emty" notes
         }
 
         public StepFile Read(byte[] file)
@@ -248,9 +240,9 @@
 
             foreach (string simNoteEntry in simNoteEntries)
             {
-                Difficulty stepFileDifficulty = new Difficulty();
+                Difficulty stepFileDifficulty = new Difficulty(stepFile);
 
-                ChartType chartType = ChartType.none;
+                ChartType chartType = ChartType.None;
                 string description = String.Empty;
                 string difficulty = String.Empty;
                 int numericMeter = 0;
@@ -293,27 +285,27 @@
                                 case 0:
                                     if (value == "dance-single")
                                     {
-                                        chartType = ChartType.dance_single;
+                                        chartType = ChartType.FourKey;
                                     }
                                     else if (value == "pump-single")
                                     {
-                                        chartType = ChartType.pump_single;
+                                        chartType = ChartType.FiveKey;
                                     }
                                     else if (value == "dance-solo")
                                     {
-                                        chartType = ChartType.dance_solo;
+                                        chartType = ChartType.SixKey;
                                     }
                                     else if (value == "kb7-single")
                                     {
-                                        chartType = ChartType.kb7_single;
+                                        chartType = ChartType.SevenKey;
                                     }
                                     else if (value == "dance-double")
                                     {
-                                        chartType = ChartType.dance_double;
+                                        chartType = ChartType.EightKey;
                                     }
                                     else if (value == "pump-double")
                                     {
-                                        chartType = ChartType.pump_double;
+                                        chartType = ChartType.TenKey;
                                     }
                                     break;
                                 case 1: description = value; break;
@@ -327,8 +319,9 @@
                         }
                     }
 
-                    if (chartType != ChartType.none)
+                    if (chartType != ChartType.None)
                     {
+                        stepFileDifficulty.ChartType = chartType;
                         stepFileDifficulty.Level = numericMeter;
 
                         // Parse notes
@@ -375,19 +368,19 @@
                             int notesPerLine = (int)chartType;
                             int lineCount = measureRow.Length / notesPerLine;
 
-                            Measure measure = new Measure();
+                            Measure measure = new Measure(stepFile);
                             measure.Index = measureRowIndex;
 
                             for (int currentLineCount = 0; currentLineCount < lineCount; currentLineCount++)
                             {
-                                Line line = new Line();
+                                Line line = new Line(stepFile);
                                 line.Index = currentLineCount;
 
                                 int noteStartIndex = currentLineCount * notesPerLine;
 
                                 for (int currentNoteInLine = 0; currentNoteInLine < notesPerLine; currentNoteInLine++)
                                 {
-                                    Step step = new Step();
+                                    Step step = new Step(stepFile);
                                     step.Index = currentNoteInLine;
 
                                     int currentNoteIndex = noteStartIndex + currentNoteInLine;
@@ -415,8 +408,8 @@
                                         case '1': step.StepType = StepType.Normal; break;
                                         case '2': step.StepType = StepType.HoldStart; break;
                                         case '3': step.StepType = StepType.HoldEnd; break;
-                                        case '4': break;
-                                        case 'M': break;
+                                        case '4': step.StepType = StepType.RollStart; break;
+                                        case 'M': step.StepType = StepType.Mine; break;
                                         case 'K': break;
                                         case 'L': break;
                                         case 'F': break;

@@ -2,6 +2,7 @@
 {
     using Arrowgene.StepFiles.Model;
     using System.Collections.Generic;
+    using System.IO;
     using WriteImpl;
 
     public class StepFileWriter
@@ -21,7 +22,12 @@
 
         public void Write(StepFile stepFile, string destiantionPath)
         {
+            string fileExtension = Path.GetExtension(destiantionPath);
 
+            if (this.stepFileWriter.ContainsKey(fileExtension))
+            {
+                this.stepFileWriter[fileExtension].Write(stepFile, destiantionPath);
+            }
         }
 
     }

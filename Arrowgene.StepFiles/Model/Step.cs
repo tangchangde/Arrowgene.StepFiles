@@ -5,13 +5,21 @@
     /// </summary>
     public class Step
     {
-        public Step()
+        public Step(StepFile stepFile)
         {
+            this.StepFile = stepFile;
             this.Index = 0;
             this.StepType = StepType.None;
         }
 
+        public StepFile StepFile { get; private set; }
         public int Index { get; set; }
         public StepType StepType { get; set; }
+
+        public bool IsValid()
+        {
+            bool isValid = true;
+            return isValid;
+        }
     }
 }
