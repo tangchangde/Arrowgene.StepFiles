@@ -8,13 +8,38 @@
     /// </summary>
     public class Difficulty
     {
+
         public Difficulty()
         {
             this.Measures = new List<Measure>();
             this.Level = 0;
         }
 
+        public int Duration { get; set; }
         public int Level { get; set; }
         public List<Measure> Measures { get; set; }
+
+
+        public int GetNoteCount()
+        {
+            int count = 0;
+            foreach (Measure measure in Measures)
+            {
+                foreach (Line line in measure.Lines)
+                {
+                    foreach (Step step in line.Steps)
+                    {
+                        if (step.StepType != StepType.None)
+                        {
+                            count++;
+                        }
+                    }
+                }
+            }
+            return count;
+        }
+
+
+
     }
 }

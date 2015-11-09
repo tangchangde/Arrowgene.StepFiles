@@ -13,5 +13,6 @@
 
         public int Index { get; set; }
         public StepType StepType { get; set; }
+        
     }
 }

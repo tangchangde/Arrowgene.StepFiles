@@ -22,6 +22,10 @@
         public string Offset { get; set; }
         public string SampleStart { get; set; }
         public string Title { get; set; }
+        public int Id { get; set; }
+        public string FileExtension { get; set; }
+        public string Producer { get; set; }
+        public string FileName { get; set; }
 
         public List<Difficulty> Difficulties { get; set; }
     }
