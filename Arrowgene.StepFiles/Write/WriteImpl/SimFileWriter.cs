@@ -97,10 +97,14 @@
                 this.WriteNewLine(binaryWriter);
 
                 int currentMeasureIndex = 0;
+
+                difficulty.Measures.Sort((x, y) => y.Index.CompareTo(x.Index));
                 foreach (Measure measure in difficulty.Measures)
                 {
+                    measure.Lines.Sort((x, y) => y.Index.CompareTo(x.Index));
                     foreach (Line line in measure.Lines)
                     {
+                        line.Steps.Sort((x, y) => y.Index.CompareTo(x.Index));
                         foreach (Step step in line.Steps)
                         {
                             char stepType = '0';
@@ -111,6 +115,8 @@
                                 case StepType.HoldEnd: stepType = '3'; break;
                                 case StepType.RollStart: stepType = '4'; break;
                                 case StepType.Mine: stepType = 'M'; break;
+                                default:
+                                case StepType.None: stepType = '0'; break;
                             }
                             binaryWriter.Write((byte)stepType);
                         }
